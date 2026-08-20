@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from io import StringIO      # add near your other imports at the top
+import yfinance as yf
 
 URL="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 
@@ -15,7 +16,22 @@ def get_sp500_tickers():
     tickers=sp500_table["Symbol"].tolist()
     return tickers
 
+def download_prices(tickers, start="2020-01-01",end="2025-01-01"):
+
+    data=yf.download(
+        tickers,
+        start=start,
+        end=end,
+        auto_adjust=True
+    )
+    price=data["Close"]
+    return price
+
 if __name__ == "__main__":
     tickers=get_sp500_tickers()
-    print(f"Got {len(tickers)} tickers")
-    print(tickers[:10])
+
+    sample=tickers[:5]
+    prices=download_prices(sample)
+
+    print(prices.shape)
+    print(prices.tail())
