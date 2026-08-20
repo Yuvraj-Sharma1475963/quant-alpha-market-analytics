@@ -13,7 +13,7 @@ def get_sp500_tickers():
 
     table = pd.read_html(StringIO(response.text))
     sp500_table=table[0]
-    tickers=sp500_table["Symbol"].tolist()
+    tickers=sp500_table["Symbol"].str.replace(".","-",regex=False).tolist()
     return tickers
 
 def download_prices(tickers, start="2020-01-01",end="2025-01-01"):
@@ -29,9 +29,7 @@ def download_prices(tickers, start="2020-01-01",end="2025-01-01"):
 
 if __name__ == "__main__":
     tickers=get_sp500_tickers()
-
-    sample=tickers[:5]
-    prices=download_prices(sample)
-
-    print(prices.shape)
-    print(prices.tail())
+    print(f"Downloading {len(tickers)} tickers...")
+    prices=download_prices(tickers)
+    prices.to_csv("data/prices.csv")
+    print(f"Saved prices: {prices.shape}")
