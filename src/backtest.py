@@ -19,19 +19,35 @@ def backtest(prices):
 
     return daily_return,strategy_return
 
-def compare(price):
-    buy_hold, strategy = backtest(price)
+def compare_series(bh_returns, strat_returns):
     return pd.DataFrame({
-        "Buy_Hold": [annualized_returns(buy_hold), annualized_volatility(buy_hold),
-                     sharpe_ratio(buy_hold), max_drawdown(buy_hold)],
-        "Strategy": [annualized_returns(strategy), annualized_volatility(strategy),
-                     sharpe_ratio(strategy), max_drawdown(strategy)],
+        "Buy_Hold": [annualized_returns(bh_returns), annualized_volatility(bh_returns),
+                     sharpe_ratio(bh_returns), max_drawdown(bh_returns)],
+        "Strategy": [annualized_returns(strat_returns), annualized_volatility(strat_returns),
+                     sharpe_ratio(strat_returns), max_drawdown(strat_returns)],
     }, index=["Annual Return", "Volatility", "Sharpe", "Max Drawdown"])
 
+
+def portfolio_backtest(prices):
+    returns = prices.pct_change()
+
+    # Signal for EVERY stock at once (short MA > long MA per column)
+    short_ma = prices.rolling(50).mean()
+    long_ma  = prices.rolling(200).mean()
+    signals = (short_ma > long_ma).astype(int)   # 1/0 matrix, all stocks
+
+    # Look-ahead fix + strategy returns for every stock
+    strat_returns = signals.shift(1) * returns
+
+    # Equal-weight portfolio = average across all stocks each day
+    bh_portfolio    = returns.mean(axis=1)        # axis=1 = average across columns (stocks)
+    strat_portfolio = strat_returns.mean(axis=1)
+
+    return bh_portfolio, strat_portfolio
 if __name__ == "__main__":
     prices=load_prices()
     prices=clean_prices(prices)
 
-    for tickers in["AAPL", "INTC", "WBD"]:
-        print("\n=== Strategy vs Buy & Hold === for: ",tickers)
-        print(compare(prices[tickers]))
+    bh_p, strat_p = portfolio_backtest(prices)
+    print("\n===== FULL S&P 500 PORTFOLIO =====")
+    print(compare_series(bh_p, strat_p))   
