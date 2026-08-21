@@ -19,35 +19,19 @@ def backtest(prices):
 
     return daily_return,strategy_return
 
+def compare(price):
+    buy_hold, strategy = backtest(price)
+    return pd.DataFrame({
+        "Buy_Hold": [annualized_returns(buy_hold), annualized_volatility(buy_hold),
+                     sharpe_ratio(buy_hold), max_drawdown(buy_hold)],
+        "Strategy": [annualized_returns(strategy), annualized_volatility(strategy),
+                     sharpe_ratio(strategy), max_drawdown(strategy)],
+    }, index=["Annual Return", "Volatility", "Sharpe", "Max Drawdown"])
 
 if __name__ == "__main__":
     prices=load_prices()
     prices=clean_prices(prices)
 
-    appl_price=prices["AAPL"]
-
-    buy_hold,strategy=backtest(appl_price)
-    buy_equity=(1+buy_hold).cumprod()
-    st_equity=(1+strategy).cumprod()
-
-    
-    print("Buy & Hold  final value of $1:", buy_equity.iloc[-1])
-    print("Strategy    final value of $1:", st_equity.iloc[-1])
-
-    print("\n=== Strategy vs Buy & Hold ===")
-    comparison = pd.DataFrame({
-        "Buy_Hold": [
-            annualized_returns(buy_hold),
-            annualized_volatility(buy_hold),
-            sharpe_ratio(buy_hold),
-            max_drawdown(buy_hold),
-        ],
-        "Strategy": [
-            annualized_returns(strategy),
-            annualized_volatility(strategy),
-            sharpe_ratio(strategy),
-            max_drawdown(strategy),
-        ],
-    }, index=["Annual Return", "Volatility", "Sharpe", "Max Drawdown"])
-
-    print(comparison)
+    for tickers in["AAPL", "INTC", "WBD"]:
+        print("\n=== Strategy vs Buy & Hold === for: ",tickers)
+        print(compare(prices[tickers]))
