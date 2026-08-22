@@ -2,7 +2,7 @@
 
 An end-to-end quantitative research pipeline for the S&P 500 — from raw price data to an interactive backtesting dashboard. Built with Python, pandas, and Streamlit.
 
-![assets/dashboard.jpeg]
+![Dashboard](assets/dashboard.jpeg)
 
 
 ## Overview
