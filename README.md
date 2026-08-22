@@ -2,7 +2,8 @@
 
 An end-to-end quantitative research pipeline for the S&P 500 — from raw price data to an interactive backtesting dashboard. Built with Python, pandas, and Streamlit.
 
-![Dashboard](assets/dashboard.jpeg)
+![assets/dashboard.jpeg]
+
 
 ## Overview
 This project downloads 5 years of S&P 500 price data, computes risk-adjusted performance metrics, and backtests a trend-following strategy against a buy-and-hold benchmark — all visualised in an interactive Streamlit dashboard.
