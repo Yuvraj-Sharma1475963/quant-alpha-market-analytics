@@ -5,7 +5,6 @@ def load_prices(path="data/prices.csv"):
 
     #loading data 
     prices=pd.read_csv(path,index_col=0,parse_dates=True)
-    print(prices)
     return prices
 
 
